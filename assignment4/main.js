@@ -1,6 +1,4 @@
 
-//"use strict";
-
 var gl;
 var time = 0;
 

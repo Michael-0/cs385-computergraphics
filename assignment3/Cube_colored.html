@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<head>
+    <script type="text/javascript" src="initShaders.js"></script>
+	<script type="text/javascript" src="MV.js"></script>
+	<script type="text/javascript" src="Cube.js"></script>
+	<script type="text/javascript" src="main.js"></script>
+
+    <script id="Cube-vertex-shader" type="x-shader/x-vertex">
+        in vec4 aPosition;
+		out vec4 vColor;
+		uniform mat4 perspProj;
+		uniform mat4 viewTrans;
+		uniform mat4 R;
+		uniform mat4 T;
+        void main()
+        {
+            gl_PointSize = 3.0;
+			vColor = aPosition;
+			// order: projection transformation, viewing transformation, modeling transformation, vertex positions
+			gl_Position = perspProj * viewTrans * R * T * aPosition;
+        }
+    </script>
+
+    <script id="Cube-fragment-shader" type="x-shader/x-fragment">
+        precision highp float;
+
+        in vec4 vColor;
+		out vec4 fColor;
+
+        void main()
+        {
+			if (gl_FrontFacing)
+			{
+				fColor = vColor;
+			}
+			else
+			{
+				fColor = vec4(0, 1.0, 0, 1.0);
+			}
+        }
+    </script>
+</head>
+<body>
+    <canvas id="webgl-canvas" width="512" height="512"></canvas>
+</body>
