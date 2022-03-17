@@ -28,43 +28,43 @@ function init() {
     sun = new Sphere(100,100);
     earth = new Sphere(100,100);
     moon = new Sphere(100,100);
-
-    sun.radius = 432690;
-    sun.color = "yellow";
-
-    earth.radius = 3958;
-    earth.color = "blue";
-    earth.orbit = 92453000;
-
-    moon.radius = 1079;
-    moon.color = "white";
-    moon.orbit = 92691900; // distance from earth -> sun + earth -> moon
-
-    // fovy = 2 arctan((D/2) / (near + D/2))
-    // fovy = 2 arctan(92692979 / 92692980)
-    // fovy = 2 * 0.785398
-    // fovy = 1.570796226
-
-    dist = 185385958;
-    var near = 1;
-	var far = near + dist;
-
-    var aspect = canvas.clientWidth / canvas.clientHeight;
-    var perspProjection = perspective(1.570796226, aspect, near, far)
-    sun.P = perspProjection;
-    earth.P = perspProjection;
-    moon.P = perspProjection
-
-    // let z = -1/2 * (near + far);
-    // var view = vec4(0,0,z,1);
-    let eyeVec = vec3(0,0,185385958);
-	let atVec = vec3(0,0,-1);
-	let upVec = vec3(1,1,1);
-	let view = lookAt(eyeVec, atVec, upVec);
-
-    sun.MV = view;
-    earth.MV = view;
-    moon.MV = view;
+	//
+    // sun.radius = 432690;
+    // sun.color = "yellow";
+	//
+    // earth.radius = 3958;
+    // earth.color = "blue";
+    // earth.orbit = 92453000;
+	//
+    // moon.radius = 1079;
+    // moon.color = "white";
+    // moon.orbit = 92691900; // distance from earth -> sun + earth -> moon
+	//
+    // // fovy = 2 arcsin((D/2) / (near + D/2))
+    // // fovy = 2 arcsin(92692979 / 92692980)
+    // // fovy = 2 * 1.57064943
+    // // fovy = 3.14129886
+	//
+    // dist = 185385958;
+    // var near = 1;
+	// var far = near + dist;
+	//
+    // var aspect = canvas.clientWidth / canvas.clientHeight;
+    // var perspProjection = perspective(3.14129886, aspect, near, far)
+    // sun.P = perspProjection;
+    // earth.P = perspProjection;
+    // moon.P = perspProjection
+	//
+    // // let z = -1/2 * (near + far);
+    // // var view = vec4(0,0,z,1);
+    // let eyeVec = vec3(0,0,185385958);
+	// let atVec = vec3(0,0,-1);
+	// let upVec = vec3(1,1,1);
+	// let view = lookAt(eyeVec, atVec, upVec);
+	//
+    // sun.MV = view;
+    // earth.MV = view;
+    // moon.MV = view;
 
 
     requestAnimationFrame(render);
@@ -73,11 +73,11 @@ function init() {
 function render() {
 
     // Update your motion variables here
-    time+=1;
-
+    // time+=1;
+	//
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
-
-    // Add your rendering sequence here
+	//
+    // // Add your rendering sequence here
     ms = new MatrixStack();
     var V = translate(0,0,-0.5*(near+far));
     ms.load(V);
@@ -85,18 +85,33 @@ function render() {
     ms.push();
     ms.scale(sun.radius);
     sun.color = vec4(1,0,1,1);
-    sun.draw();
+    sun.render();
     ms.pop();
 
-    // let earthPos = translate(0,0,-earth.orbit);
-    // let earthRot = rotate(time, vec3(1,0,0));
-    // ms = mult(earthPos, earthRot);
-
-    sun.MV = ms.current();
-
-	sun.render();
-    earth.render();
-    moon.render();
+	ms.push();
+ 	ms.rotate(year, axis);
+ 	ms.translate(distance, 0, 0);
+	ms.push();
+ 	ms.rotate(day, axis);
+ 	ms.scale(Earth.radius);
+ 	Earth.MV = ms.current();
+ 	Earth.render();
+	ms.pop();
+	ms.translate(Moon.distance, 0, 0);
+ 	ms.scale(Moon.radius);
+ 	Moon.MV = ms.current();
+ 	Moon.render();
+ 	ms.pop();
+	//
+    // // let earthPos = translate(0,0,-earth.orbit);
+    // // let earthRot = rotate(time, vec3(1,0,0));
+    // // ms = mult(earthPos, earthRot);
+	//
+    // sun.MV = ms.current();
+	//
+	// sun.render();
+    // earth.render();
+    // moon.render();
 
     requestAnimationFrame(render);
 }
