@@ -29,7 +29,7 @@ function init() {
     Sun = new Sphere(100,100);
     Earth = new Sphere(100,100);
     Moon = new Sphere(100,100);
-	//
+
     Sun.radius = 432.690;
     Sun.color = vec4(1,1,0,1);
 
@@ -59,17 +59,6 @@ function init() {
     Sun.P = perspProjection;
     Earth.P = perspProjection;
     Moon.P = perspProjection;
-	//
-    // // let z = -1/2 * (near + far);
-    // // var view = vec4(0,0,z,1);
-    // let eyeVec = vec3(0,0,185385958);
-	// let atVec = vec3(0,0,-1);
-	// let upVec = vec3(1,1,1);
-	// let view = lookAt(eyeVec, atVec, upVec);
-	//
-    // sun.MV = view;
-    // earth.MV = view;
-    // moon.MV = view;
 
 
     requestAnimationFrame(render);
@@ -112,16 +101,7 @@ function render() {
  	Moon.MV = ms.current();
  	Moon.render();
  	ms.pop();
-	//
-    // // let earthPos = translate(0,0,-earth.orbit);
-    // // let earthRot = rotate(time, vec3(1,0,0));
-    // // ms = mult(earthPos, earthRot);
-	//
-    // sun.MV = ms.current();
-	//
-	// sun.render();
-    // earth.render();
-    // moon.render();
+
 
     requestAnimationFrame(render);
 }
