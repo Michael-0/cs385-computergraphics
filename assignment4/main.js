@@ -1,6 +1,6 @@
 
 var gl;
-var time = 0;
+var year = 0;
 
 function init() {
 
@@ -25,20 +25,21 @@ function init() {
     gl.enable(gl.DEPTH_TEST);
 
     // Add your sphere creation and configuration code here
-    sun = new Sphere(100,100);
-    earth = new Sphere(100,100);
-    moon = new Sphere(100,100);
+    Sun = new Sphere(100,100);
+    Earth = new Sphere(100,100);
+    Moon = new Sphere(100,100);
 	//
-    // sun.radius = 432690;
-    // sun.color = "yellow";
-	//
-    // earth.radius = 3958;
-    // earth.color = "blue";
-    // earth.orbit = 92453000;
-	//
-    // moon.radius = 1079;
-    // moon.color = "white";
-    // moon.orbit = 92691900; // distance from earth -> sun + earth -> moon
+    Sun.radius = 432690;
+    Sun.color = vec4(1,1,0,1);
+
+    Earth.radius = 3958;
+    Earth.color = vec4(0,0,1,1);
+    Earth.orbit = 92453000;
+
+    Moon.radius = 1079;
+    Moon.color = vec4(1,1,1,1);
+    Moon.orbit = 238900;
+
 	//
     // // fovy = 2 arcsin((D/2) / (near + D/2))
     // // fovy = 2 arcsin(92692979 / 92692980)
@@ -73,7 +74,7 @@ function init() {
 function render() {
 
     // Update your motion variables here
-    // time+=1;
+    year+=1;
 	//
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 	//
@@ -83,8 +84,7 @@ function render() {
     ms.load(V);
 
     ms.push();
-    ms.scale(sun.radius);
-    sun.color = vec4(1,0,1,1);
+    ms.scale(Sun.radius);
     sun.render();
     ms.pop();
 
