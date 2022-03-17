@@ -1,6 +1,7 @@
 
 var gl;
 var year = 0;
+var day = 0;
 
 function init() {
 
@@ -29,16 +30,19 @@ function init() {
     Earth = new Sphere(100,100);
     Moon = new Sphere(100,100);
 	//
-    Sun.radius = 432690;
+    Sun.radius = 432.690;
     Sun.color = vec4(1,1,0,1);
 
-    Earth.radius = 3958;
+    Earth.radius = 3.958;
     Earth.color = vec4(0,0,1,1);
-    Earth.orbit = 92453000;
+    Earth.orbit = 92453.000;
 
-    Moon.radius = 1079;
+    Moon.radius = 1.079;
     Moon.color = vec4(1,1,1,1);
-    Moon.orbit = 238900;
+    Moon.orbit = 238.900;
+
+	near = 1;
+	far = 185386.958;
 
 	//
     // // fovy = 2 arcsin((D/2) / (near + D/2))
@@ -50,11 +54,11 @@ function init() {
     // var near = 1;
 	// var far = near + dist;
 	//
-    // var aspect = canvas.clientWidth / canvas.clientHeight;
-    // var perspProjection = perspective(3.14129886, aspect, near, far)
-    // sun.P = perspProjection;
-    // earth.P = perspProjection;
-    // moon.P = perspProjection
+    var aspect = canvas.clientWidth / canvas.clientHeight;
+    var perspProjection = perspective(3.14129886, aspect, near, far)
+    Sun.P = perspProjection;
+    Earth.P = perspProjection;
+    Moon.P = perspProjection;
 	//
     // // let z = -1/2 * (near + far);
     // // var view = vec4(0,0,z,1);
@@ -75,29 +79,35 @@ function render() {
 
     // Update your motion variables here
     year+=1;
+	day+=2;
 	//
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 	//
     // // Add your rendering sequence here
     ms = new MatrixStack();
     var V = translate(0,0,-0.5*(near+far));
+	// let eyeVec = vec3(0,0,1000000);
+	// let atVec = vec3(0,0,-1);
+	// let upVec = vec3(1,1,1);
+	// var V = lookAt(eyeVec, atVec, upVec);
     ms.load(V);
 
     ms.push();
     ms.scale(Sun.radius);
-    sun.render();
+	Sun.MV = ms.current();
+    Sun.render();
     ms.pop();
 
 	ms.push();
- 	ms.rotate(year, axis);
- 	ms.translate(distance, 0, 0);
+ 	ms.rotate(year, vec3(1,0,0));
+ 	ms.translate(Earth.orbit, 0, 0);
 	ms.push();
- 	ms.rotate(day, axis);
+ 	ms.rotate(day, vec3(1,0,0));
  	ms.scale(Earth.radius);
  	Earth.MV = ms.current();
  	Earth.render();
 	ms.pop();
-	ms.translate(Moon.distance, 0, 0);
+	ms.translate(Moon.orbit, 0, 0);
  	ms.scale(Moon.radius);
  	Moon.MV = ms.current();
  	Moon.render();
