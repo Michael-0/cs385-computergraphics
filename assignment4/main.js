@@ -36,16 +36,17 @@ function init() {
 	Earth.radius = 100;
     //Earth.radius = 3.958;
     Earth.color = vec4(0,0,1,1);
-    Earth.orbit = 2453.000;
+    //Earth.orbit = 2453.000;
+	Earth.orbit = 1200;
 
 	Moon.radius = 50;
     //Moon.radius = 1.079;
     Moon.color = vec4(1,1,1,1);
     //Moon.orbit = 238.900;
-	Moon.orbit = 500;
+	Moon.orbit = 400;
 
 	near = 1;
-	far = 185386.958;
+	far = 135000;
 
 	//
     // // fovy = 2 arcsin((D/2) / (near + D/2))
@@ -70,15 +71,14 @@ function init() {
 function render() {
 
     // Update your motion variables here
-    year+=.5;
-	//day+=1;
+    year+=.2;
+	day+=.5;
 	//
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 	//
     // // Add your rendering sequence here
     ms = new MatrixStack();
-    //var V = translate(0,0,-0.5*(near+far));
-	let eyeVec = vec3(0,0,-far);
+	let eyeVec = vec3(0,0,-1/3*far);
 	let atVec = vec3(0,0,-1);
 	let upVec = vec3(1,1,1);
 	var V = lookAt(eyeVec, atVec, upVec);
@@ -91,7 +91,7 @@ function render() {
     ms.pop();
 
 	ms.push();
- 	ms.rotate(year, vec3(1,0,0));
+ 	ms.rotate(year, vec3(0,1,0));
  	ms.translate(Earth.orbit, 0, 0);
 	ms.push();
  	ms.rotate(day, vec3(1,0,0));
@@ -99,7 +99,8 @@ function render() {
  	Earth.MV = ms.current();
  	Earth.render();
 	ms.pop();
-	ms.translate(0, 0, Moon.orbit);
+	ms.rotate(day, vec3(1,0,0));
+	ms.translate(0, Moon.orbit, 0);
  	ms.scale(Moon.radius);
  	Moon.MV = ms.current();
  	Moon.render();
