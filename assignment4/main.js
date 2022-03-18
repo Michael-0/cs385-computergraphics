@@ -29,6 +29,7 @@ function init() {
     Sun = new Sphere(100,100);
     Earth = new Sphere(100,100);
     Moon = new Sphere(100,100);
+	Mars = new Sphere(100,100);
 
     Sun.radius = 432.690;
     Sun.color = vec4(1,1,0,1);
@@ -44,6 +45,12 @@ function init() {
     Moon.color = vec4(1,1,1,1);
     //Moon.orbit = 238.900;
 	Moon.orbit = 400;
+
+	Mars.radius = 100;
+    //Earth.radius = 3.958;
+    Mars.color = vec4(1,0,0,1);
+    //Earth.orbit = 2453.000;
+	Mars.orbit = 1400;
 
 	near = 1;
 	far = 135000;
@@ -63,6 +70,7 @@ function init() {
     Sun.P = perspProjection;
     Earth.P = perspProjection;
     Moon.P = perspProjection;
+	Mars.P = perspProjection;
 
 
     requestAnimationFrame(render);
@@ -89,6 +97,17 @@ function render() {
 	Sun.MV = ms.current();
     Sun.render();
     ms.pop();
+
+	ms.push();
+	ms.rotate(year, vec3(0,0,1));
+	ms.translate(Mars.orbit, 0, 0);
+	ms.push();
+	ms.rotate(day, vec3(1,0,0));
+	ms.scale(Mars.radius);
+	Mars.MV = ms.current();
+	Mars.render();
+	ms.pop();
+	ms.pop();
 
 	ms.push();
  	ms.rotate(year, vec3(0,1,0));
