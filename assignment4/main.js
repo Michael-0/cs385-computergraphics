@@ -5,9 +5,9 @@ var day = 0;
 
 function init() {
 
-    /*
-    in miles
-    Suns radius: 432,690
+    /* Googled values in miles
+
+	Suns radius: 432,690
     Earth radius: 3,958
     Moon radius: 1,079
 
@@ -31,31 +31,36 @@ function init() {
     Moon = new Sphere(100,100);
 	Mars = new Sphere(100,100);
 
+	// commented out values are googled astronomically
+	// accurate values that looked terrible on screen.
     Sun.radius = 432.690;
-    Sun.color = vec4(1,1,0,1);
+	//Sun.radius = 432690;
+	Sun.color = vec4(1,1,0,1);
 
 	Earth.radius = 100;
-    //Earth.radius = 3.958;
+    //Earth.radius = 3958;
     Earth.color = vec4(0,0,1,1);
-    //Earth.orbit = 2453.000;
+    //Earth.orbit = 2453000;
 	Earth.orbit = 1200;
 
 	Moon.radius = 50;
-    //Moon.radius = 1.079;
+    //Moon.radius = 1079;
     Moon.color = vec4(1,1,1,1);
-    //Moon.orbit = 238.900;
+    //Moon.orbit = 238900;
 	Moon.orbit = 400;
 
 	Mars.radius = 100;
-    //Earth.radius = 3.958;
+    //Earth.radius = 3958;
     Mars.color = vec4(1,0,0,1);
-    //Earth.orbit = 2453.000;
+    //Earth.orbit = 2453000;
 	Mars.orbit = 1400;
 
 	near = 1;
 	far = 135000;
 
-	//
+	// Based on google search for accuracy... Didn't look
+	// good so I ended up playing with the numbers until I liked them
+
     // // fovy = 2 arcsin((D/2) / (near + D/2))
     // // fovy = 2 arcsin(92692979 / 92692980)
     // // fovy = 2 * 1.57064943
@@ -66,6 +71,7 @@ function init() {
 	// var far = near + dist;
 	//
     var aspect = canvas.clientWidth / canvas.clientHeight;
+	// +1 to zoom in because of the modified radius and size values
     var perspProjection = perspective(3.14129886+1, aspect, near, far)
     Sun.P = perspProjection;
     Earth.P = perspProjection;
@@ -79,12 +85,14 @@ function init() {
 function render() {
 
     // Update your motion variables here
+	// played with different values to find a speed
+	// I liked
     year+=.2;
 	day+=.5;
-	//
+
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
-	//
-    // // Add your rendering sequence here
+
+    // Add your rendering sequence here
     ms = new MatrixStack();
 	let eyeVec = vec3(0,0,-1/3*far);
 	let atVec = vec3(0,0,-1);
@@ -118,6 +126,7 @@ function render() {
  	Earth.MV = ms.current();
  	Earth.render();
 	ms.pop();
+
 	ms.rotate(day, vec3(1,0,0));
 	ms.translate(0, Moon.orbit, 0);
  	ms.scale(Moon.radius);
