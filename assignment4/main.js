@@ -33,13 +33,16 @@ function init() {
     Sun.radius = 432.690;
     Sun.color = vec4(1,1,0,1);
 
-    Earth.radius = 3.958;
+	Earth.radius = 100;
+    //Earth.radius = 3.958;
     Earth.color = vec4(0,0,1,1);
-    Earth.orbit = 92453.000;
+    Earth.orbit = 2453.000;
 
-    Moon.radius = 1.079;
+	Moon.radius = 50;
+    //Moon.radius = 1.079;
     Moon.color = vec4(1,1,1,1);
-    Moon.orbit = 238.900;
+    //Moon.orbit = 238.900;
+	Moon.orbit = 500;
 
 	near = 1;
 	far = 185386.958;
@@ -55,7 +58,7 @@ function init() {
 	// var far = near + dist;
 	//
     var aspect = canvas.clientWidth / canvas.clientHeight;
-    var perspProjection = perspective(3.14129886, aspect, near, far)
+    var perspProjection = perspective(3.14129886+1, aspect, near, far)
     Sun.P = perspProjection;
     Earth.P = perspProjection;
     Moon.P = perspProjection;
@@ -67,18 +70,18 @@ function init() {
 function render() {
 
     // Update your motion variables here
-    year+=1;
-	day+=2;
+    year+=.5;
+	//day+=1;
 	//
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 	//
     // // Add your rendering sequence here
     ms = new MatrixStack();
-    var V = translate(0,0,-0.5*(near+far));
-	// let eyeVec = vec3(0,0,1000000);
-	// let atVec = vec3(0,0,-1);
-	// let upVec = vec3(1,1,1);
-	// var V = lookAt(eyeVec, atVec, upVec);
+    //var V = translate(0,0,-0.5*(near+far));
+	let eyeVec = vec3(0,0,-far);
+	let atVec = vec3(0,0,-1);
+	let upVec = vec3(1,1,1);
+	var V = lookAt(eyeVec, atVec, upVec);
     ms.load(V);
 
     ms.push();
@@ -96,7 +99,7 @@ function render() {
  	Earth.MV = ms.current();
  	Earth.render();
 	ms.pop();
-	ms.translate(Moon.orbit, 0, 0);
+	ms.translate(0, 0, Moon.orbit);
  	ms.scale(Moon.radius);
  	Moon.MV = ms.current();
  	Moon.render();
