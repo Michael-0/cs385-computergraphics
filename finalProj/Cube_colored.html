@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<head>
+    <script type="text/javascript" src="initShaders.js"></script>
+    <script type="text/javascript" src="MV.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+
+    <script type="x-shader/x-vertex">
+    attribute vec4 a_position;
+    attribute vec3 a_normal;
+
+    uniform mat4 u_projection;
+    uniform mat4 u_view;
+    uniform mat4 u_world;
+
+    varying vec3 v_normal;
+
+    void main() {
+        gl_Position = u_projection * u_view * u_world * a_position;
+        v_normal = mat3(u_world) * a_normal;
+    }
+    </script>
+
+    <script type="x-shader/x-fragment">
+    precision mediump float;
+
+    varying vec3 v_normal;
+
+    uniform vec4 u_diffuse;
+    uniform vec3 u_lightDirection;
+
+    void main () {
+        vec3 normal = normalize(v_normal);
+        float fakeLight = dot(u_lightDirection, normal) * .5 + .5;
+        gl_FragColor = vec4(u_diffuse.rgb * fakeLight, u_diffuse.a);
+    }
+    </script>
+</head>
+<body>
+    <canvas id="webgl-canvas" width="512" height="512"></canvas>
+</body>
