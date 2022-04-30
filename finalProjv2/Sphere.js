@@ -1,22 +1,22 @@
 
-function Cube( gl, vertexShaderId, fragmentShaderId ) {
+function Sphere( gl, vertexShaderId, fragmentShaderId ) {
 
 	// Initialize the shader pipeline for this object using either shader ids
     //   declared in the application's HTML header, or use the default names.
     //
-    var vertShdr = vertexShaderId || "Cube-vertex-shader";
-    var fragShdr = fragmentShaderId || "Cube-fragment-shader";
+    var vertShdr = vertexShaderId || "Sphere-vertex-shader";
+    var fragShdr = fragmentShaderId || "Sphere-fragment-shader";
 
     this.program = initShaders(gl, vertShdr, fragShdr);
 
     if ( this.program < 0 ) {
-        alert( "Error: Cube shader pipeline failed to compile.\n\n" +
+        alert( "Error: Sphere shader pipeline failed to compile.\n\n" +
             "\tvertex shader id:  \t" + vertShdr + "\n" +
             "\tfragment shader id:\t" + fragShdr + "\n" );
         return;
     }
 
-	// Initialize arrays for the Cube's indices and vertex positions
+	// Initialize arrays for the Sphere's indices and vertex positions
 	//
 	var positions = [
 		0.045277, 0.051482, -0.000123,

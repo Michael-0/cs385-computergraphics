@@ -1,139 +1,42 @@
 var time = 0;
 var width;
 var height;
-
-var text;
-
-async function getObj()
-{
-    const response = await fetch('./knife.obj');
-    text = await response.text();
-}
-
-function parseOBJ(text) {
-    // because indices are base 1 let's just fill in the 0th data
-    const objPositions = [[0, 0, 0]];
-    const objTexcoords = [[0, 0]];
-    const objNormals = [[0, 0, 0]];
-
-    // same order as `f` indices
-    const objVertexData = [
-        objPositions,
-        objTexcoords,
-        objNormals,
-    ];
-
-    // same order as `f` indices
-    let webglVertexData = [
-        [],   // positions
-        [],   // texcoords
-        [],   // normals
-    ];
-
-    function addVertex(vert) {
-        const ptn = vert.split('/');
-        ptn.forEach((objIndexStr, i) => {
-            if (!objIndexStr) {
-                return;
-            }
-            const objIndex = parseInt(objIndexStr);
-            const index = objIndex + (objIndex >= 0 ? 0 : objVertexData[i].length);
-            webglVertexData[i].push(...objVertexData[i][index]);
-        });
-    }
-
-    const keywords = {
-        v(parts) {
-            objPositions.push(parts.map(parseFloat));
-        },
-        vn(parts) {
-            objNormals.push(parts.map(parseFloat));
-        },
-        vt(parts) {
-            objTexcoords.push(parts.map(parseFloat));
-        },
-        f(parts) {
-            const numTriangles = parts.length - 2;
-            for (let tri = 0; tri < numTriangles; ++tri) {
-                addVertex(parts[0]);
-                addVertex(parts[tri + 1]);
-                addVertex(parts[tri + 2]);
-            }
-        },
-    };
-    return {
-        position: webglVertexData[0],
-        texcoord: webglVertexData[1],
-        normal: webglVertexData[2],
-    };
-}
-
+var cube;
 function render()
 {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    const cameraTarget = [0, 0, 0];
-    const cameraPosition = [0, 0, 4];
-    const zNear = 0.1;
-    const zFar = 50;
+	var near = 1;
+	var far = 15;
 
-    function degToRad(deg) {
-        return deg * Math.PI / 180;
-    }
-    time *= 0.001;  // convert to seconds
+	time+=.5;
+	// random amounts for each axis that I thought looked interesting
+	cube.R = rotate(time, vec3(3,1,2));
+	// Translate to origin
+	cube.T = translate(-0.5,-0.5,-0.5);
 
-    webglUtils.resizeCanvasToDisplaySize(gl.canvas);
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.enable(gl.DEPTH_TEST);
-    gl.enable(gl.CULL_FACE);
+	cube.perspProj = perspective(90, width/height, near, far); // 4 number arguments: fovy, aspect, near, far
 
-    const fieldOfViewRadians = degToRad(60);
-    const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-    const projection = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
+	// moving the eye just for fun to make the cube do more interesting dancing
+	let eyeVec = vec3(Math.sin(time/100),1,2);
+	let atVec = vec3(-Math.cos(time/100),Math.sin(time/100),-1);
+	let upVec = vec3(1,1,1);
+	cube.viewTrans = lookAt(eyeVec, atVec, upVec); // 3 vec3 arguments: eye, at, up
 
-    const up = [0, 1, 0];
-    // Compute the camera's matrix using look at.
-    const camera = m4.lookAt(cameraPosition, cameraTarget, up);
-
-    // Make a view matrix from the camera matrix.
-    const view = m4.inverse(camera);
-
-    const sharedUniforms = {
-        u_lightDirection: m4.normalize([-1, 3, 5]),
-        u_view: view,
-        u_projection: projection,
-    };
-
-    gl.useProgram(meshProgramInfo.program);
-
-    // calls gl.uniform
-    webglUtils.setUniforms(meshProgramInfo, sharedUniforms);
-
-    // calls gl.bindBuffer, gl.enableVertexAttribArray, gl.vertexAttribPointer
-    webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, bufferInfo);
-
-    // calls gl.uniform
-    webglUtils.setUniforms(meshProgramInfo, {
-        u_world: m4.yRotation(time),
-        u_diffuse: [1, 0.7, 0.5, 1],
-    });
-
-    // calls gl.drawArrays or gl.drawElements
-    webglUtils.drawBufferInfo(gl, bufferInfo);
-
-    requestAnimationFrame(render);
+	cube.render();
+	requestAnimationFrame(render);
 }
 
 function init()
 {
     var canvas = document.getElementById("webgl-canvas");
     gl = canvas.getContext("webgl2");
-    width = canvas.clientWidth;
-    height = canvas.clientHeight;
+	width = canvas.clientWidth;
+	height = canvas.clientHeight;
     gl.clearColor(.25, .5, .75, 1);
-    const bufferInfo = webglUtils.createBufferInfoFromArrays(gl, data);
-    gl.enable(gl.DEPTH_TEST);
-    gl.enable(gl.CULL_FACE);
-    gl.cullFace(gl.BACK);
+    cube = new Cube(gl);
+	gl.enable(gl.DEPTH_TEST);
+	gl.enable(gl.CULL_FACE);
+	gl.cullFace(gl.BACK);
     render();
 }
 window.onload = init;
