@@ -2,23 +2,22 @@ var width;
 var height;
 var cube;
 var rotation;
-var dx = 0;
-var dy = 0;
+var dx = 1;
+var dy = 1;
+var zoomAmount = 1;
 
 function render() {
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	var near = 1;
 	var far = 15;
 
-	// random amounts for each axis that I thought looked interesting
+	
 	cube.R = rotate(Math.sqrt(dx*dx + dy*dy), vec3(-dx, -dy, -dx+dy));
-	// Translate to origin
-	//cube.T = translate(-0.5, -0.5, -0.5);
 
 	cube.perspProj = perspective(90, width / height, near, far); // 4 number arguments: fovy, aspect, near, far
 
 	// moving the eye just for fun to make the cube do more interesting dancing
-	let eyeVec = vec3(1, 1, 2);
+	let eyeVec = vec3(1, 1, zoomAmount);
 	let atVec = vec3(-1, 0, -1);
 	let upVec = vec3(1, 1, 1);
 	cube.viewTrans = lookAt(eyeVec, atVec, upVec); // 3 vec3 arguments: eye, at, up
@@ -37,8 +36,11 @@ function init() {
 	gl.enable(gl.DEPTH_TEST);
 	gl.enable(gl.CULL_FACE);
 	gl.cullFace(gl.BACK);
-	var startX;
-	var startY;
+	var startX = 0;
+	var startY = 0;
+	function zoom (event) {
+		zoomAmount += event.deltaY/100;
+	}
 	function mousemove(event) {
 		var x = event.clientX;
 		var y = event.clientY;
@@ -54,6 +56,7 @@ function init() {
 	canvas.onmouseup = function (event) {
 		canvas.removeEventListener("mousemove", mousemove);
 	};
+	canvas.addEventListener("wheel", zoom);
 	render();
 }
 window.onload = init;
