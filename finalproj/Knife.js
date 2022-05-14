@@ -1,22 +1,22 @@
 
-function Cube( gl, vertexShaderId, fragmentShaderId ) {
+function Knife( gl, vertexShaderId, fragmentShaderId ) {
 
 	// Initialize the shader pipeline for this object using either shader ids
     //   declared in the application's HTML header, or use the default names.
     //
-    var vertShdr = vertexShaderId || "Cube-vertex-shader";
-    var fragShdr = fragmentShaderId || "Cube-fragment-shader";
+    var vertShdr = vertexShaderId || "Knife-vertex-shader";
+    var fragShdr = fragmentShaderId || "Knife-fragment-shader";
 
     this.program = initShaders(gl, vertShdr, fragShdr);
 
     if ( this.program < 0 ) {
-        alert( "Error: Cube shader pipeline failed to compile.\n\n" +
+        alert( "Error: Knife shader pipeline failed to compile.\n\n" +
             "\tvertex shader id:  \t" + vertShdr + "\n" +
             "\tfragment shader id:\t" + fragShdr + "\n" );
         return;
     }
 
-	// Initialize arrays for the Cube's indices and vertex positions
+	// Initialize arrays for the Knife's indices and vertex positions
 	//
 	var positions = [0.045277,0.051482,-0.000123, 
         0.045277,0.083030,0.006152, 
@@ -9894,7 +9894,7 @@ function Cube( gl, vertexShaderId, fragmentShaderId ) {
 
         gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.indices.buffer );
 
-		// Drawing 4 sides of the cube using triangle strip only
+		// Drawing 4 sides of the knife using triangle strip only
 		// reading the first 10 elements
         gl.drawElements( gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0 );
 

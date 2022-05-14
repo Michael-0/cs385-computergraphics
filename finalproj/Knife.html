@@ -2,10 +2,10 @@
 <head>
     <script type="text/javascript" src="initShaders.js"></script>
 	<script type="text/javascript" src="MV.js"></script>
-	<script type="text/javascript" src="Cube.js"></script>
+	<script type="text/javascript" src="Knife.js"></script>
 	<script type="text/javascript" src="main.js"></script>
 
-    <script id="Cube-vertex-shader" type="x-shader/x-vertex">
+    <script id="Knife-vertex-shader" type="x-shader/x-vertex">
         in vec4 aPosition;
 		uniform mat4 perspProj;
 		uniform mat4 viewTrans;
@@ -19,7 +19,7 @@
         }
     </script>
 
-    <script id="Cube-fragment-shader" type="x-shader/x-fragment">
+    <script id="Knife-fragment-shader" type="x-shader/x-fragment">
         precision highp float;
 
         out vec4 fColor;
