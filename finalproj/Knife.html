@@ -7,12 +7,15 @@
 
     <script id="Knife-vertex-shader" type="x-shader/x-vertex">
         in vec4 aPosition;
+		//in vec2 aTexCoord;
 		uniform mat4 perspProj;
 		uniform mat4 viewTrans;
 		uniform mat4 R;
 		uniform mat4 T;
+		//out vec2 vTexCoord;
         void main()
         {
+			//vTexCoord = aTexCoord;
             gl_PointSize = 3.0;
 			// order: projection transformation, viewing transformation, modeling transformation, vertex positions
 			gl_Position = perspProj * viewTrans * R * T * aPosition;
@@ -22,10 +25,13 @@
     <script id="Knife-fragment-shader" type="x-shader/x-fragment">
         precision highp float;
 
+		//uniform sampler2D tex;
+
         out vec4 fColor;
 
         void main()
         {
+			//fColor = texture(tex, vTexCoord);
 			if (gl_FrontFacing)
 			{
 				fColor = vec4(1.0,0,0,0.5);

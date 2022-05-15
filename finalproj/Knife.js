@@ -1,4 +1,6 @@
 
+
+
 function Knife( gl, vertexShaderId, fragmentShaderId ) {
 
 	// Initialize the shader pipeline for this object using either shader ids
@@ -9851,6 +9853,31 @@ function Knife( gl, vertexShaderId, fragmentShaderId ) {
         2336,2334,2311
         ];
 
+    for (let i = 0; i < indices.length; i++){
+        indices[i]--;
+    }
+
+        // function initTexture(){
+        //     texture = gl.createTexture();
+        //     texImage = new Image();
+        //     texImage.onload = function () {
+        //         loadTexture(image, texture);
+        //     };
+        //     texImage.src = "knifeTex.png";
+        // }
+        
+        // function loadTexture(image, texture) { 
+        //     gl.bindTexture(gl.TEXTURE_2D, texture); 
+        //     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  
+        //         gl.RGBA, gl.UNSIGNED_BYTE, image); 
+        //     gl.texParameteri(gl.TEXTURE_2D,    
+        //         gl.TEXTURE_MAG_FILTER, gl.LINEAR); 
+        //     gl.texParameteri(gl.TEXTURE_2D, 
+        //         gl.TEXTURE_MIN_FILTER,  
+        //         gl.LINEAR_MIPMAP_NEAREST); 
+        //     gl.generateMipmap(gl.TEXTURE_2D); 
+        //     gl.bindTexture(gl.TEXTURE_2D, null); 
+        //   }
 
     this.positions = { numComponents : 3 };
 
@@ -9866,6 +9893,10 @@ function Knife( gl, vertexShaderId, fragmentShaderId ) {
 
     this.positions.attributeLoc = gl.getAttribLocation( this.program, "aPosition" );
     gl.enableVertexAttribArray( this.positions.attributeLoc );
+
+    // texture plumbing
+    // gl.activeTexture(gl.TEXTURE0);
+    // gl.bindTexture(0);
 
 	// uniform plumbing for the transformations
 	this.Rloc = gl.getUniformLocation(this.program, "R");
@@ -9894,8 +9925,6 @@ function Knife( gl, vertexShaderId, fragmentShaderId ) {
 
         gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.indices.buffer );
 
-		// Drawing 4 sides of the knife using triangle strip only
-		// reading the first 10 elements
         gl.drawElements( gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0 );
 
     }

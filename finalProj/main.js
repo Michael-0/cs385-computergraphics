@@ -18,7 +18,7 @@ function render() {
 		//console.log("in if statement");
 		//knife.R = rotate(Math.sqrt(dx*dx + dy*dy), vec3(-dx, dy, dx-dy));
 		rotation = knife.R;
-		knife.R = rotate(Math.sqrt(dx*dx + dy*dy), vec3(-dx, -dy, dx+dy));
+		knife.R = rotate(Math.sqrt(dx*dx + dy*dy), vec3(-dx, -dy, (dx+dy)/2));
 		// knife.R = rotate(Math.sqrt(overallX*overallX + overallY*overallY), vec3(-dx, -dy, dx+dy));
 	}
 	
@@ -59,6 +59,10 @@ function init() {
 	gl.enable(gl.DEPTH_TEST);
 	gl.enable(gl.CULL_FACE);
 	gl.cullFace(gl.BACK);
+
+	// texture initializing
+	
+
 	var startX = 0;
 	var startY = 0;
 	function zoom (event) {
