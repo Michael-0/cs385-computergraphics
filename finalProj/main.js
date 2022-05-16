@@ -11,15 +11,26 @@ var zoomAmount = 5;
 function render() {
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	var near = 1;
-	var far = 20;
+	var far = 100;
 
-	if ((Math.abs(dx) > 0 || Math.abs(dy) > 0) && knife.R !== rotation)
+	// if ((Math.abs(dx) > 0 || Math.abs(dy) > 0) && knife.R !== rotation)
+	// {
+	// 	//console.log("in if statement");
+	// 	//knife.R = rotate(Math.sqrt(dx*dx + dy*dy), vec3(-dx, dy, dx-dy));
+	// 	rotation = knife.R;
+	// 	knife.R = rotate(Math.sqrt(dx*dx + dy*dy), vec3(-dx, -dy, (dx+dy)/2));
+	// 	// knife.R = rotate(Math.sqrt(overallX*overallX + overallY*overallY), vec3(-dx, -dy, dx+dy));
+	// }
+
+	// https://www.cs.unm.edu/~angel/CS433.S05/LECTURES/AngelCG15.pdf
+	// https://twodee.org/blog/17829
+	if (Math.abs(dx) > 0 || Math.abs(dy) > 0)
 	{
 		//console.log("in if statement");
 		//knife.R = rotate(Math.sqrt(dx*dx + dy*dy), vec3(-dx, dy, dx-dy));
-		rotation = knife.R;
-		knife.R = rotate(Math.sqrt(dx*dx + dy*dy), vec3(-dx, -dy, (dx+dy)/2));
-		// knife.R = rotate(Math.sqrt(overallX*overallX + overallY*overallY), vec3(-dx, -dy, dx+dy));
+		//rotation = knife.R;
+		//knife.R = rotate(Math.sqrt(dx*dx + dy*dy), vec3(-dx, -dy, (dx+dy)/2));
+		knife.R = rotate(Math.sqrt(overallX*overallX + overallY*overallY), vec3(1, 1, 1));
 	}
 	
 	
@@ -75,6 +86,9 @@ function init() {
 		dy = y - startY;
 		overallX += dx;
 		overallY += dy;
+		startX = x;
+		startY = y;
+
 		// rotation = Math.sqrt(dx*dx + dy*dy);
 		console.log(dx, dy);
 	}

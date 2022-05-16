@@ -9857,13 +9857,13 @@ function Knife( gl, vertexShaderId, fragmentShaderId ) {
         indices[i]--;
     }
 
-        // function initTexture(){
+        // function initTexture(url){
         //     texture = gl.createTexture();
         //     texImage = new Image();
         //     texImage.onload = function () {
         //         loadTexture(image, texture);
         //     };
-        //     texImage.src = "knifeTex.png";
+        //     texImage.src = url;
         // }
         
         // function loadTexture(image, texture) { 
@@ -9881,11 +9881,18 @@ function Knife( gl, vertexShaderId, fragmentShaderId ) {
 
     this.positions = { numComponents : 3 };
 
+    this.textures = { numComponents : 2 };
+
     this.indices = { count : indices.length };
 
     this.positions.buffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, this.positions.buffer );
     gl.bufferData( gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW );
+
+    // convert to tex
+    // this.positions.buffer = gl.createBuffer();
+    // gl.bindBuffer( gl.ARRAY_BUFFER, this.positions.buffer );
+    // gl.bufferData( gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW );
 
     this.indices.buffer = gl.createBuffer();
     gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.indices.buffer );
@@ -9896,7 +9903,6 @@ function Knife( gl, vertexShaderId, fragmentShaderId ) {
 
     // texture plumbing
     // gl.activeTexture(gl.TEXTURE0);
-    // gl.bindTexture(0);
 
 	// uniform plumbing for the transformations
 	this.Rloc = gl.getUniformLocation(this.program, "R");
@@ -9918,6 +9924,7 @@ function Knife( gl, vertexShaderId, fragmentShaderId ) {
 		gl.uniformMatrix4fv(this.Lloc, gl.FALSE, flatten(this.T));
 		gl.uniformMatrix4fv(this.perspProjloc, gl.FALSE, flatten(this.perspProj));
 		gl.uniformMatrix4fv(this.viewTransloc, gl.FALSE, flatten(this.viewTrans));
+        //gl.uniform1i(texLoc, 0);
 
         gl.bindBuffer( gl.ARRAY_BUFFER, this.positions.buffer );
         gl.vertexAttribPointer( this.positions.attributeLoc, this.positions.numComponents,
