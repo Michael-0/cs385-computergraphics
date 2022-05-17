@@ -114,7 +114,37 @@ function init() {
 	gl.enable(gl.CULL_FACE);
 	gl.cullFace(gl.BACK);
 
+	function requestCORSIfNotSameOrigin(img, url) {
+		if ((new URL(url, window.location.href)).origin !== window.location.origin) {
+		  img.crossOrigin = "";
+		}
+	  }
+
 	// texture initializing
+	var texture0 = initTexture("./folding-knife/source/model/textures/low_DefaultMaterial_Normal.png");
+	function initTexture(url) {
+		texture = gl.createTexture();
+		texImage = new Image();
+		texImage.onload = function () {
+			loadTexture(texImage, texture);
+		};
+		//requestCORSIfNotSameOrigin(texImage, url);
+		texImage.src = url;
+		return texture;
+	}
+
+	function loadTexture(image, texture) {
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
+			gl.RGBA, gl.UNSIGNED_BYTE, image);
+		gl.texParameteri(gl.TEXTURE_2D,
+			gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D,
+			gl.TEXTURE_MIN_FILTER,
+			gl.LINEAR_MIPMAP_NEAREST);
+		gl.generateMipmap(gl.TEXTURE_2D);
+		gl.bindTexture(gl.TEXTURE_2D, null);
+	}
 
 	function onMouseDown(event) {
 		if (event.button === 0) {
