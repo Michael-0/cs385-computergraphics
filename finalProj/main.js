@@ -6,31 +6,34 @@ var dx = 0;
 var dy = 0;
 var overallX = 1;
 var overallY = 1;
-var zoomAmount = 5;
+var zoomAmount = 1;
 var isLeftMouseDown = false;
 var trackball;
 
 class Trackball {
 	constructor() {
 		this.mouseSphere0 = null;
-		this.prevRotations = mat4(); // initialize to identity
-		this.netRotation = mat4(); // init to ident
+		this.previousRotation = mat4(); // initialize to identity
+		this.currentRotation = mat4(); // init to ident
 		this.dimensions = vec2(0, 0);
 	}
 
 	setViewport(width, height) {
-		this.dimensions[0] = width;
-		this.dimensions[1] = height;
+		this.dimensions.x = width;
+		this.dimensions.y = height;
 	}
 
 	pixelsToSphere(mousePixels) {
-		let mouseNdc = mousePixels / this.dimensions * 2 - 1;
-		let zSquared = 1 - mouseNdc.x ^ 2 - mouseNdc.y ^ 2;
+		// console.log(mousePixels[0]);
+		let mouseNdcX = mousePixels[0] / this.dimensions.x * 2 - 1;
+		let mouseNdcY = mousePixels[1] / this.dimensions.y * 2 - 1;
+		//console.log(mouseNdc);
+		let zSquared = 1 - Math.pow(mouseNdcX, 2) - Math.pow(mouseNdcY, 2);
 		if (zSquared > 0) {
-			return vec3(mouseNdc.x, mouseNdc.y, zSquared ^ 0.5);
+			return vec3(mouseNdcX, -mouseNdcY, Math.pow(zSquared, 0.5));
 		}
 		else {
-			return vec3(mouseNdc.x, mouseNdc.y, 0).normalize();
+			return normalize(vec3(mouseNdcX,-mouseNdcY, 0));
 		}
 	}
 
@@ -40,12 +43,12 @@ class Trackball {
 
 	drag(mousePixels, multiplier) {
 		let mouseSphere = this.pixelsToSphere(mousePixels);
-		dot = this.mouseSphere0.dot(mouseSphere);
-		if (Math.abs(dot) < 0.9999) {
-			radians = acos(dot) * multiplier;
-			let axis = this.mouseSphere0.cross(mouseSphere).normalize();
-			currentRotation = Matrix4.rotateAroundAxis(axis, radians * 180 / pi);
-			this.rotation = currentRotation * this.previousRotation;
+		let dotProd = dot(mouseSphere, this.mouseSphere0);
+		if (Math.abs(dotProd) < 0.9999) {
+			let radians = Math.acos(dotProd) * multiplier;
+			let axis = normalize(cross(this.mouseSphere0, mouseSphere));
+			this.currentRotation = rotate(radians * 180 / Math.PI, axis);
+			this.rotation = mult(this.currentRotation, this.previousRotation);
 		}
 	}
 
@@ -65,53 +68,39 @@ function render() {
 	var near = 1;
 	var far = 100;
 
-	// if ((Math.abs(dx) > 0 || Math.abs(dy) > 0) && knife.R !== rotation)
-	// {
-	// 	//console.log("in if statement");
-	// 	//knife.R = rotate(Math.sqrt(dx*dx + dy*dy), vec3(-dx, dy, dx-dy));
-	// 	rotation = knife.R;
-	// 	knife.R = rotate(Math.sqrt(dx*dx + dy*dy), vec3(-dx, -dy, (dx+dy)/2));
-	// 	// knife.R = rotate(Math.sqrt(overallX*overallX + overallY*overallY), vec3(-dx, -dy, dx+dy));
-	// }
-
 	// https://www.cs.unm.edu/~angel/CS433.S05/LECTURES/AngelCG15.pdf
 	// https://twodee.org/blog/17829
 	//gl.setUniformMatrix4('modelToWorld', trackball.rotation);
-	if (Math.abs(dx) > 0 || Math.abs(dy) > 0) {
+	// if (Math.abs(dx) > 0 || Math.abs(dy) > 0) {
 		//console.log("in if statement");
 		//knife.R = rotate(Math.sqrt(dx*dx + dy*dy), vec3(-dx, dy, dx-dy));
 		//rotation = knife.R;
 		//knife.R = rotate(Math.sqrt(dx*dx + dy*dy), vec3(-dx, -dy, (dx+dy)/2));
-		knife.R = rotate(Math.sqrt(overallX * overallX + overallY * overallY), vec3(1, 1, 1));
-	}
+		//console.log(trackball.rotation);
+		trackball.rotation === undefined ? knife.R = rotate(0, vec3(1,1,1)) : knife.R = trackball.rotation;
+		//console.log(trackball.currentRotation);
 
-
-
-	// if (knife.hasOwnProperty("R"))
-	// {
-	// 	//console.log(knife.R);
-	// 	knife.R = add(rotate(Math.sqrt(dx*dx + dy*dy), vec3(-dx, -dy, dx+dy)), knife.R);
-	// }
-	// else
-	// {
-	// 	console.log("In else");
-	// 	//console.log(knife.R);
-	// 	knife.R = rotate(Math.sqrt(dx*dx + dy*dy), vec3(-dx, -dy, -dx+dy));
 	// }
 
 	knife.perspProj = perspective(90, width / height, near, far); // 4 number arguments: fovy, aspect, near, far
 
 	// moving the eye forward or back to zoom in or out
-	let eyeVec = vec3(0, 0, zoomAmount);
+	// let eyeVec = vec3(0, 0, zoomAmount);
+	let eyeVec = vec3(0, 0, 5);
 	let atVec = vec3(0, 0, -1);
 	let upVec = vec3(1, 1, 1);
 	knife.viewTrans = lookAt(eyeVec, atVec, upVec); // 3 vec3 arguments: eye, at, up
 
+	if (zoomAmount < 0) {
+		zoomAmount = 0;
+	}
+	else{
+		knife.T = scalem(zoomAmount, zoomAmount, zoomAmount);
+	}
+
 	knife.render();
 	requestAnimationFrame(render);
 }
-
-
 
 function init() {
 	var canvas = document.getElementById("webgl-canvas");
@@ -130,36 +119,37 @@ function init() {
 	function onMouseDown(event) {
 		if (event.button === 0) {
 			isLeftMouseDown = true;
-			const mousePixels = new vec2(event.clientX, canvas.height - event.clientY);
+			const mousePixels = vec2(event.clientX,event.clientY);
 			trackball.start(mousePixels);
 		}
 	}
 
 	function onMouseDrag(event) {
 		if (isLeftMouseDown) {
-			const mousePixels = new vec2(event.clientX, canvas.height - event.clientY);
+			const mousePixels = vec2(event.clientX, event.clientY);
 			trackball.drag(mousePixels, 2);
-			render();
+			// render();
 		}
 	}
 
 	function onMouseUp(event) {
 		if (isLeftMouseDown) {
 			isLeftMouseDown = false;
-			const mousePixels = new vec2(event.clientX, canvas.height - event.clientY);
+			const mousePixels = vec2(event.clientX, event.clientY);
 			trackball.end(mousePixels);
 		}
 	}
 
-	function onSizeChanged() {
-		trackball.setViewport(canvas.width, canvas.height);
-	}
+	// function onSizeChanged() {
+	// 	trackball.setViewport(canvas.width, canvas.height);
+	// }
 
 	trackball = new Trackball();
+	trackball.setViewport(width, height);
 	var startX = 0;
 	var startY = 0;
 	function zoom(event) {
-		zoomAmount += event.deltaY / 100;
+		zoomAmount += (-event.deltaY / 1000) * (zoomAmount);
 	}
 	window.addEventListener('mousedown', onMouseDown);
 	window.addEventListener('mousemove', onMouseDrag);
