@@ -68,19 +68,10 @@ function render() {
 	var near = 1;
 	var far = 100;
 
+	// virtual trackball references
 	// https://www.cs.unm.edu/~angel/CS433.S05/LECTURES/AngelCG15.pdf
 	// https://twodee.org/blog/17829
-	//gl.setUniformMatrix4('modelToWorld', trackball.rotation);
-	// if (Math.abs(dx) > 0 || Math.abs(dy) > 0) {
-		//console.log("in if statement");
-		//knife.R = rotate(Math.sqrt(dx*dx + dy*dy), vec3(-dx, dy, dx-dy));
-		//rotation = knife.R;
-		//knife.R = rotate(Math.sqrt(dx*dx + dy*dy), vec3(-dx, -dy, (dx+dy)/2));
-		//console.log(trackball.rotation);
-		trackball.rotation === undefined ? knife.R = rotate(0, vec3(1,1,1)) : knife.R = trackball.rotation;
-		//console.log(trackball.currentRotation);
-
-	// }
+	trackball.rotation === undefined ? knife.R = rotate(0, vec3(1,1,1)) : knife.R = trackball.rotation;
 
 	knife.perspProj = perspective(90, width / height, near, far); // 4 number arguments: fovy, aspect, near, far
 
@@ -109,7 +100,6 @@ function init() {
 	height = canvas.clientHeight;
 	gl.clearColor(.25, .5, .75, 1);
 	knife = new Knife(gl);
-	//knife.R = mat4(1);
 	gl.enable(gl.DEPTH_TEST);
 	gl.enable(gl.CULL_FACE);
 	gl.cullFace(gl.BACK);
@@ -128,7 +118,7 @@ function init() {
 		texImage.onload = function () {
 			loadTexture(texImage, texture);
 		};
-		//requestCORSIfNotSameOrigin(texImage, url);
+		requestCORSIfNotSameOrigin(texImage, url);
 		texImage.src = url;
 		return texture;
 	}
