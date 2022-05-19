@@ -21441,7 +21441,8 @@ function Knife( gl, vertexShaderId, fragmentShaderId ) {
     gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(texInd), gl.STATIC_DRAW );
 
     //texture location
-    this.texPos.attributeLoc = gl.getAttribLocation( this.program, "aTexCoord" );
+    // This line tries to map but does it wrong
+    //this.texPos.attributeLoc = gl.getAttribLocation( this.program, "aTexCoord" );
     gl.enableVertexAttribArray( this.texPos.attributeLoc );
 
 	// uniform plumbing for the transformations
@@ -21458,7 +21459,9 @@ function Knife( gl, vertexShaderId, fragmentShaderId ) {
 	this.viewTrans = mat4();
 
     this.texloc = gl.getUniformLocation(this.program, "tex");
-	//this.tex = sampler2D();
+	// this.tex = sampler2D();
+
+    //gl.activeTexture(gl.TEXTURE0);
 
     this.render = function () {
         gl.useProgram( this.program );

@@ -2,10 +2,6 @@ var width;
 var height;
 var knife;
 var rotation = mat4();
-var dx = 0;
-var dy = 0;
-var overallX = 1;
-var overallY = 1;
 var zoomAmount = 1;
 var isLeftMouseDown = false;
 var trackball;
@@ -24,10 +20,8 @@ class Trackball {
 	}
 
 	pixelsToSphere(mousePixels) {
-		// console.log(mousePixels[0]);
 		let mouseNdcX = mousePixels[0] / this.dimensions.x * 2 - 1;
 		let mouseNdcY = mousePixels[1] / this.dimensions.y * 2 - 1;
-		//console.log(mouseNdc);
 		let zSquared = 1 - Math.pow(mouseNdcX, 2) - Math.pow(mouseNdcY, 2);
 		if (zSquared > 0) {
 			return vec3(mouseNdcX, -mouseNdcY, Math.pow(zSquared, 0.5));
@@ -111,7 +105,9 @@ function init() {
 	  }
 
 	// texture initializing
-	var texture0 = initTexture("./folding-knife/source/model/textures/low_DefaultMaterial_Normal.png");
+	knife.tex = initTexture("./folding-knife/source/model/textures/low_DefaultMaterial_Normal.png");
+	//var texture0 = initTexture("./folding-knife/source/model/textures/low_DefaultMaterial_BaseColor.png");
+	//var texture0 = initTexture("./low_DefaultMaterial_Normal.png");
 	function initTexture(url) {
 		texture = gl.createTexture();
 		texImage = new Image();
@@ -148,7 +144,6 @@ function init() {
 		if (isLeftMouseDown) {
 			const mousePixels = vec2(event.clientX, event.clientY);
 			trackball.drag(mousePixels, 2);
-			// render();
 		}
 	}
 
@@ -160,14 +155,8 @@ function init() {
 		}
 	}
 
-	// function onSizeChanged() {
-	// 	trackball.setViewport(canvas.width, canvas.height);
-	// }
-
 	trackball = new Trackball();
 	trackball.setViewport(width, height);
-	var startX = 0;
-	var startY = 0;
 	function zoom(event) {
 		zoomAmount += (-event.deltaY / 1000) * (zoomAmount);
 	}
