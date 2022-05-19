@@ -21487,7 +21487,7 @@ function Knife( gl, vertexShaderId, fragmentShaderId ) {
 
         gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.texInd.buffer );
 
-        gl.drawElements( gl.TRIANGLES, texInd.length, gl.UNSIGNED_SHORT, 0 );
+        //gl.drawElements( gl.TRIANGLES, texInd.length, gl.UNSIGNED_SHORT, 0 );
 
     }
 };

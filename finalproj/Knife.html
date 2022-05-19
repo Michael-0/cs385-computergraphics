@@ -12,6 +12,7 @@
 		uniform mat4 viewTrans;
 		uniform mat4 R;
 		uniform mat4 T;
+		out vec4 vColor;
 		out vec2 vTexCoord;
         void main()
         {
@@ -19,6 +20,7 @@
             gl_PointSize = 3.0;
 			// order: projection transformation, viewing transformation, modeling transformation, vertex positions
 			gl_Position = perspProj * viewTrans * R * T * aPosition;
+			vColor = aPosition;
         }
     </script>
 
@@ -27,13 +29,14 @@
 
 		uniform sampler2D tex;
 		in vec2 vTexCoord;
+		in vec4 vColor;
 
         out vec4 fColor;
 
         void main()
         {
-			fColor = texture(tex, vTexCoord);
-			//fColor = vec4(1,1,0,1);
+			//fColor = texture(tex, vTexCoord);
+			fColor = vColor;
         }
     </script>
 </head>
