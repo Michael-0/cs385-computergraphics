@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+
 <head>
-    <script type="text/javascript" src="initShaders.js"></script>
+	<script type="text/javascript" src="initShaders.js"></script>
 	<script type="text/javascript" src="MV.js"></script>
 	<script type="text/javascript" src="Knife.js"></script>
 	<script type="text/javascript" src="main.js"></script>
 
-    <script id="Knife-vertex-shader" type="x-shader/x-vertex">
+	<script id="Knife-vertex-shader" type="x-shader/x-vertex">
         in vec4 aPosition;
 		in vec2 aTexCoord;
 		uniform mat4 perspProj;
@@ -27,7 +28,7 @@
         }
     </script>
 
-    <script id="Knife-fragment-shader" type="x-shader/x-fragment">
+	<script id="Knife-fragment-shader" type="x-shader/x-fragment">
         precision highp float;
 
 		uniform sampler2D tex;
@@ -41,6 +42,21 @@
         }
     </script>
 </head>
+
 <body>
 	<canvas id="webgl-canvas" width="1024" height="800"></canvas>
+
+	<form id="materialPickerForm" onclick="materialPickerHandler()">
+		<input type="radio" name="matPicker" id="baseColor" value="BaseColor" checked>
+		<label for="baseColor">Base Color</label><br />
+
+		<input type="radio" name="matPicker" id="normal" value="Normal">
+		<label for="baseMat">Normal Map</label><br />
+
+		<input type="radio" name="matPicker" id="metallic" value="Metallic">
+		<label for="baseMat">Metallic</label><br />
+
+		<input type="radio" name="matPicker" id="roughness" value="Roughness">
+		<label for="baseMat">Roughness</label><br />
+	</form>
 </body>

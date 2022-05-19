@@ -31,7 +31,7 @@ class Trackball {
 			return vec3(mouseNdcX, -mouseNdcY, Math.pow(zSquared, 0.5));
 		}
 		else {
-			return normalize(vec3(mouseNdcX,-mouseNdcY, 0));
+			return normalize(vec3(mouseNdcX, -mouseNdcY, 0));
 		}
 	}
 
@@ -68,7 +68,7 @@ function render() {
 
 	// used a check to make sure the rotation matrix was not undefined
 	// caught an error when the object first loaded
-	trackball.rotation === undefined ? knife.R = rotate(0, vec3(1,1,1)) : knife.R = trackball.rotation;
+	trackball.rotation === undefined ? knife.R = rotate(0, vec3(1, 1, 1)) : knife.R = trackball.rotation;
 
 	knife.perspProj = perspective(90, width / height, near, far); // 4 number arguments: fovy, aspect, near, far
 
@@ -83,12 +83,44 @@ function render() {
 	if (zoomAmount < 0) {
 		zoomAmount = 1;
 	}
-	else{
+	else {
 		knife.T = scalem(zoomAmount, zoomAmount, zoomAmount);
 	}
 
 	knife.render();
 	requestAnimationFrame(render);
+}
+
+function initTexture(url) {
+	texture = gl.createTexture();
+	texImage = new Image();
+	texImage.onload = function () {
+		loadTexture(texImage, texture);
+	};
+	requestCORSIfNotSameOrigin(texImage, url);
+	texImage.src = url;
+	return texture;
+}
+
+function loadTexture(image, texture) {
+	gl.bindTexture(gl.TEXTURE_2D, texture);
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
+		gl.RGBA, gl.UNSIGNED_BYTE, image);
+	gl.texParameteri(gl.TEXTURE_2D,
+		gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D,
+		gl.TEXTURE_MIN_FILTER,
+		gl.LINEAR_MIPMAP_NEAREST);
+	gl.generateMipmap(gl.TEXTURE_2D);
+	gl.bindTexture(gl.TEXTURE_2D, null);
+}
+
+// code I found online that was supposed to fix the CORS error I
+// was getting
+function requestCORSIfNotSameOrigin(img, url) {
+	if ((new URL(url, window.location.href)).origin !== window.location.origin) {
+		img.crossOrigin = "";
+	}
 }
 
 function init() {
@@ -102,47 +134,14 @@ function init() {
 	gl.enable(gl.CULL_FACE);
 	gl.cullFace(gl.BACK);
 
-	// code I found online that was supposed to fix the CORS error I
-	// was getting
-	function requestCORSIfNotSameOrigin(img, url) {
-		if ((new URL(url, window.location.href)).origin !== window.location.origin) {
-		  img.crossOrigin = "";
-		}
-	  }
-
-	
 	// texture initializing
-	//knife.tex = initTexture("./folding-knife/source/model/textures/low_DefaultMaterial_Metallic.png");
-	knife.tex = initTexture("./folding-knife/source/model/textures/low_DefaultMaterial_Normal.png");
-	function initTexture(url) {
-		texture = gl.createTexture();
-		texImage = new Image();
-		texImage.onload = function () {
-			loadTexture(texImage, texture);
-		};
-		requestCORSIfNotSameOrigin(texImage, url);
-		texImage.src = url;
-		return texture;
-	}
-
-	function loadTexture(image, texture) {
-		gl.bindTexture(gl.TEXTURE_2D, texture);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
-			gl.RGBA, gl.UNSIGNED_BYTE, image);
-		gl.texParameteri(gl.TEXTURE_2D,
-			gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D,
-			gl.TEXTURE_MIN_FILTER,
-			gl.LINEAR_MIPMAP_NEAREST);
-		gl.generateMipmap(gl.TEXTURE_2D);
-		gl.bindTexture(gl.TEXTURE_2D, null);
-	}
+	knife.tex = initTexture("./folding-knife/source/model/textures/low_DefaultMaterial_BaseColor.png");
 
 	// setting up mouse input events based on virtual trackball reference
 	function onMouseDown(event) {
 		if (event.button === 0) {
 			isLeftMouseDown = true;
-			const mousePixels = vec2(event.clientX,event.clientY);
+			const mousePixels = vec2(event.clientX, event.clientY);
 			trackball.start(mousePixels);
 		}
 	}
@@ -177,4 +176,18 @@ function init() {
 	render();
 }
 window.onload = init;
+
+// I wanted to add a texture picker so you could easily see the
+// different textures that came with the model
+function materialPickerHandler() {
+	var elements = document.getElementsByName("matPicker");
+
+	var selectedTexture = "baseColor";
+	for (let i = 0; i < elements.length; i++) {
+		if (elements[i].checked) {
+			selectedTexture = elements[i].value;
+		}
+	}
+	knife.tex = initTexture("./folding-knife/source/model/textures/low_DefaultMaterial_" + selectedTexture + ".png");
+}
 
