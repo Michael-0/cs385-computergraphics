@@ -6,6 +6,10 @@ var zoomAmount = 1;
 var isLeftMouseDown = false;
 var trackball;
 
+// implementation of virtual trackball based on Dave's suggestion
+// references:
+// https://www.cs.unm.edu/~angel/CS433.S05/LECTURES/AngelCG15.pdf
+// https://twodee.org/blog/17829
 class Trackball {
 	constructor() {
 		this.mouseSphere0 = null;
@@ -59,12 +63,11 @@ class Trackball {
 
 function render() {
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-	var near = 1;
+	var near = 0.1;
 	var far = 100;
 
-	// virtual trackball references
-	// https://www.cs.unm.edu/~angel/CS433.S05/LECTURES/AngelCG15.pdf
-	// https://twodee.org/blog/17829
+	// used a check to make sure the rotation matrix was not undefined
+	// caught an error when the object first loaded
 	trackball.rotation === undefined ? knife.R = rotate(0, vec3(1,1,1)) : knife.R = trackball.rotation;
 
 	knife.perspProj = perspective(90, width / height, near, far); // 4 number arguments: fovy, aspect, near, far
@@ -76,8 +79,9 @@ function render() {
 	let upVec = vec3(1, 1, 1);
 	knife.viewTrans = lookAt(eyeVec, atVec, upVec); // 3 vec3 arguments: eye, at, up
 
+	// prevent negative scaling to prevent the model from mirroring
 	if (zoomAmount < 0) {
-		zoomAmount = 0;
+		zoomAmount = 1;
 	}
 	else{
 		knife.T = scalem(zoomAmount, zoomAmount, zoomAmount);
@@ -98,16 +102,18 @@ function init() {
 	gl.enable(gl.CULL_FACE);
 	gl.cullFace(gl.BACK);
 
+	// code I found online that was supposed to fix the CORS error I
+	// was getting
 	function requestCORSIfNotSameOrigin(img, url) {
 		if ((new URL(url, window.location.href)).origin !== window.location.origin) {
 		  img.crossOrigin = "";
 		}
 	  }
 
+	
 	// texture initializing
+	//knife.tex = initTexture("./folding-knife/source/model/textures/low_DefaultMaterial_Metallic.png");
 	knife.tex = initTexture("./folding-knife/source/model/textures/low_DefaultMaterial_Normal.png");
-	//var texture0 = initTexture("./folding-knife/source/model/textures/low_DefaultMaterial_BaseColor.png");
-	//var texture0 = initTexture("./low_DefaultMaterial_Normal.png");
 	function initTexture(url) {
 		texture = gl.createTexture();
 		texImage = new Image();
@@ -132,6 +138,7 @@ function init() {
 		gl.bindTexture(gl.TEXTURE_2D, null);
 	}
 
+	// setting up mouse input events based on virtual trackball reference
 	function onMouseDown(event) {
 		if (event.button === 0) {
 			isLeftMouseDown = true;
@@ -158,6 +165,9 @@ function init() {
 	trackball = new Trackball();
 	trackball.setViewport(width, height);
 	function zoom(event) {
+		// dividing by a constant to control the amount of zoom per scroll
+		// multiplying by zoomAmount to keep the zoom proportion feeling the same.
+		// ie. the zoom doesn't zoom a lot far away and only a little close up
 		zoomAmount += (-event.deltaY / 1000) * (zoomAmount);
 	}
 	window.addEventListener('mousedown', onMouseDown);

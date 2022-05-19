@@ -9856,6 +9856,7 @@ function Knife( gl, vertexShaderId, fragmentShaderId ) {
         indices[i]--;
     }
 
+    // initializing arrays for texture position and indices
     var texPos = [0.199497,0.572143,
         0.206658,0.590215,
         0.194047,0.577585,
@@ -21407,8 +21408,16 @@ function Knife( gl, vertexShaderId, fragmentShaderId ) {
         3861,3826,3962
         ];
 
+    var texCoord = [];
+
+    // manipulating the indices for the texture so it mapped
+    // correctly on the geometry
     for (let i = 0; i < texInd.length; i++) {
         texInd[i]--;
+        var index = 2 * texInd[i];
+        var temp = 2 * indices[i];
+       texCoord[temp] = texPos[index];
+       texCoord[temp+1] = texPos[index+1];
     }
 
     this.positions = { numComponents : 3 };
@@ -21433,16 +21442,10 @@ function Knife( gl, vertexShaderId, fragmentShaderId ) {
     //texture position buffer
     this.texPos.buffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, this.texPos.buffer );
-    gl.bufferData( gl.ARRAY_BUFFER, new Float32Array(texPos), gl.STATIC_DRAW );
-
-    //texture indices buffer
-    this.texInd.buffer = gl.createBuffer();
-    gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.texInd.buffer );
-    gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(texInd), gl.STATIC_DRAW );
+    gl.bufferData( gl.ARRAY_BUFFER, new Float32Array(texCoord), gl.STATIC_DRAW );
 
     //texture location
-    // This line tries to map but does it wrong
-    //this.texPos.attributeLoc = gl.getAttribLocation( this.program, "aTexCoord" );
+    this.texPos.attributeLoc = gl.getAttribLocation( this.program, "aTexCoord" );
     gl.enableVertexAttribArray( this.texPos.attributeLoc );
 
 	// uniform plumbing for the transformations
@@ -21459,9 +21462,6 @@ function Knife( gl, vertexShaderId, fragmentShaderId ) {
 	this.viewTrans = mat4();
 
     this.texloc = gl.getUniformLocation(this.program, "tex");
-	// this.tex = sampler2D();
-
-    //gl.activeTexture(gl.TEXTURE0);
 
     this.render = function () {
         gl.useProgram( this.program );
@@ -21471,23 +21471,20 @@ function Knife( gl, vertexShaderId, fragmentShaderId ) {
 		gl.uniformMatrix4fv(this.perspProjloc, gl.FALSE, flatten(this.perspProj));
 		gl.uniformMatrix4fv(this.viewTransloc, gl.FALSE, flatten(this.viewTrans));
         gl.uniform1i(this.texloc, 0);
+        gl.bindTexture(gl.TEXTURE_2D, this.tex);
 
         gl.bindBuffer( gl.ARRAY_BUFFER, this.positions.buffer );
         gl.vertexAttribPointer( this.positions.attributeLoc, this.positions.numComponents,
             gl.FLOAT, gl.FALSE, 0, 0 );
 
-        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.indices.buffer );
-
-        gl.drawElements( gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0 );
-
-        // texture buffers
+        // texture buffer
         gl.bindBuffer( gl.ARRAY_BUFFER, this.texPos.buffer );
         gl.vertexAttribPointer( this.texPos.attributeLoc, this.texPos.numComponents,
             gl.FLOAT, gl.FALSE, 0, 0 );
 
-        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.texInd.buffer );
+        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.indices.buffer );
 
-        //gl.drawElements( gl.TRIANGLES, texInd.length, gl.UNSIGNED_SHORT, 0 );
+        gl.drawElements( gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0 );
 
     }
 };

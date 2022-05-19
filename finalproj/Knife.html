@@ -12,15 +12,18 @@
 		uniform mat4 viewTrans;
 		uniform mat4 R;
 		uniform mat4 T;
-		out vec4 vColor;
 		out vec2 vTexCoord;
         void main()
         {
 			vTexCoord = aTexCoord;
+			// flipping the coordinates in the y direction because
+			// webgl says the origin is in the bottom left and these
+			// texture coordinates were based on the model where the
+			// origin is in top left
+			vTexCoord.y = 1.0 - vTexCoord.y;
             gl_PointSize = 3.0;
 			// order: projection transformation, viewing transformation, modeling transformation, vertex positions
 			gl_Position = perspProj * viewTrans * R * T * aPosition;
-			vColor = aPosition;
         }
     </script>
 
@@ -29,14 +32,12 @@
 
 		uniform sampler2D tex;
 		in vec2 vTexCoord;
-		in vec4 vColor;
 
         out vec4 fColor;
 
         void main()
         {
-			//fColor = texture(tex, vTexCoord);
-			fColor = vColor;
+			fColor = texture(tex, vTexCoord);
         }
     </script>
 </head>
