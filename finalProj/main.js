@@ -46,7 +46,8 @@ class Trackball {
 			let radians = Math.acos(dotProd) * multiplier;
 			let axis = normalize(cross(this.mouseSphere0, mouseSphere));
 			this.currentRotation = rotate(radians * 180 / Math.PI, axis);
-			this.rotation = mult(this.currentRotation, this.previousRotation);
+			this.currentRotation && this.previousRotation? this.rotation = mult(this.currentRotation, this.previousRotation) : this.rotation = mat4();
+			// this.rotation = mult(this.currentRotation, this.previousRotation);
 		}
 	}
 
@@ -56,7 +57,7 @@ class Trackball {
 	}
 
 	cancel() {
-		this.rotation = this.previousRotation;
+		this.previousRotation? this.rotation = this.previousRotation : this.rotation = mat4();
 		this.mouseSphere0 = null;
 	}
 }
