@@ -2,7 +2,7 @@ function Knife( gl, vertexShaderId, fragmentShaderId ) {
 
 	// Initialize the shader pipeline for this object using either shader ids
     //   declared in the application's HTML header, or use the default names.
-    //
+
     var vertShdr = vertexShaderId || "Knife-vertex-shader";
     var fragShdr = fragmentShaderId || "Knife-fragment-shader";
 
@@ -16,7 +16,7 @@ function Knife( gl, vertexShaderId, fragmentShaderId ) {
     }
 
 	// Initialize arrays for the Knife's indices and vertex positions
-	//
+
 	var positions = [0.045277,0.051482,-0.000123, 
         0.045277,0.083030,0.006152, 
         0.045277,0.109775,0.024023, 
